@@ -1,28 +1,44 @@
 <?php
+session_start();
 echo <<< _HEAD1
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h2>Enter your protein sequence and Taxon family</h2>
-    <form action="input_query.php" method="post">
+_HEAD1;
+
+echo <<< _FORM
+    <form action="../web_project/results.php" method="post">
         <label for="protein">Protein Family</label><br>
         <input type="text" name="protein" id="protein" required><br><br>
 
         <label for="taxon">Taxonomic Group:</label><br>
         <input type="text" name="taxon" id="taxon" required><br><br>
 
-_HEAD1;
+        <p>Optional parameters:</p>
 
-echo <<< _TAIL1
+        <label for="limit">Max Sequences:</label><br>
+        <input type="number" name="limit" id="limit" min="0"><br><br>
+        <p>*10 by default</p>
+
+        <input type="checkbox" name="use_length_filter" id="use_length_filter">
+        <label for="use_length_filter">Filter by Sequence Length:</label><br>
+        Min Length: <input type="number" name="min_len" value="100" min="0">
+        Max Length: <input type="number" name="max_len" value="500" min="0"><br><br>
+
         <input type="submit" value="Submit">
     </form>
+_FORM;
+
+echo <<< _TAIL1
 </body>
+
 </html>
 _TAIL1;
-
-?>
