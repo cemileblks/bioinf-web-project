@@ -2,6 +2,8 @@
 
 session_start();
 
+$run_id = uniqid("run_");
+echo $run_id;
 $protein = $_POST['protein'];
 $taxon = $_POST['taxon'];
 # https://dev.to/lavary/php-double-question-marks-null-coalescing-operator-explained-49d7
@@ -22,7 +24,8 @@ if ($min_len > $max_len) {
 }
 
 // escape characters that can trick the shell command
-$command = escapeshellcmd("python3 scripts/get_sequences.py \"$protein\" \"$taxon\" $limit $min_len $max_len");
+$command = ("python3 scripts/get_sequences.py \"$protein\" \"$taxon\" $limit $min_len $max_len $run_id");
+echo $command;
 
 // execute via shell and return output as string
 // output here is the output from the python script that is shown in comand line
@@ -31,6 +34,7 @@ $output = shell_exec($command);
 
 echo "<h3>Sequences fetched for: $protein in $taxon</h3>";
 echo "<pre>$output</pre>";
+error_log($output);
 echo "<a href='index.php'>Back to Homepage</a>";
 
 ?>
