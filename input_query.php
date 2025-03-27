@@ -9,7 +9,6 @@ echo <<< _HEAD1
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-
 <body>
     <h2>Enter your protein sequence and Taxon family</h2>
 _HEAD1;
@@ -25,11 +24,10 @@ echo <<< _FORM
         <p>Optional parameters:</p>
 
         <label for="limit">Max Sequences:</label><br>
-        <input type="number" name="limit" id="limit" min="0"><br><br>
-        <p>*10 by default</p>
+        <input type="number" name="limit" id="limit" min="0">
+        <p>*10 by default</p><br>
 
         <input type="checkbox" name="use_length_filter" id="use_length_filter">
-        <label for="use_length_filter">Filter by Sequence Length:</label><br>
         Min Length: <input type="number" name="min_len" value="100" min="0">
         Max Length: <input type="number" name="max_len" value="500" min="0"><br><br>
 
