@@ -2,12 +2,17 @@
 import sys, os
 from Bio import Entrez, SeqIO
 from io import StringIO
+# https://www.w3schools.com/python/python_modules.asp
+# used chatgpt to debug module not loading
+from config import ENTREZ_EMAIL, ENTREZ_API_KEY # config python file that stores env variables
+from pop_queries import insert_query
+from pop_sequences import insert_sequence
 
-Entrez.email = os.getenv("ENTREZ_EMAIL")
-Entrez.api_key = os.getenv("ENTREZ_API_KEY")
+Entrez.email = ENTREZ_EMAIL
+Entrez.api_key = ENTREZ_API_KEY
 
 # Entrez (efetch) → FASTA string → Parse records → Filter by length → 
-# → Save only those which meet filter → Use that .fasta for alignment
+# → Save only those which meet filter → Populate database tables → Use that .fasta for alignment
 
 # Function to retrieve sequence info based on user parameters with defaults
 def get_sequences(protein, taxonomic_group, search_limit=10, min_len=0, max_len=100000):
@@ -61,6 +66,12 @@ def get_sequences(protein, taxonomic_group, search_limit=10, min_len=0, max_len=
     # create output file only if there are sequences found
     if len(final_sequences) > 0:
 
+        # populate the database tables
+        insert_query(run_id, protein, taxonomic_group, min_len, max_len, len(final_sequences))
+
+        for record in final_sequences:
+            insert_sequence(run_id, record)
+
         # Full file paths based on script location (used chatgpt for this)
         script_dir = os.path.dirname(os.path.abspath(__file__))
         output_dir = os.path.join(script_dir, "output", sys.argv[6])
@@ -95,7 +106,8 @@ limit = int(sys.argv[3])
 min_len = int(sys.argv[4])
 max_len = int(sys.argv[5])
 run_id = sys.argv[6]
-print(f'I AM PYTHON{run_id}')
+
+print(f'<br>I AM PYTHON FILE BEING RUN WITH THE RUN_ID:{run_id}<br>')
 
 get_sequences(protein, taxon, limit, min_len, max_len)
 
