@@ -35,6 +35,27 @@ $output = shell_exec($command);
 echo "<h3>Sequences fetched for: $protein in $taxon</h3>";
 echo "<pre>$output</pre>";
 error_log($output);
+
+# Clustalo analysis
+$input_fasta = "scripts/output/$run_id/sequences.fasta";
+$alignment_out = "scripts/output/$run_id/alignment.aln";
+$distmat_out = "scripts/output/$run_id/identity_matrix.txt";
+$tree_out = "scripts/output/$run_id/guide_tree.dnd";
+
+// ClustalO command
+$clustal_cmd = "bash scripts/run_clustalo.sh $input_fasta $alignment_out $distmat_out $tree_out";
+
+$clustalo_output = shell_exec($clustal_cmd);
+
+echo "<h3>ClustalO alignment completed</h3>";
+echo "<pre>$clustalo_output</pre>";
+
+if (file_exists($alignment_out)) {
+    $alignment_output = file_get_contents($alignment_out);
+    echo "<pre>$alignment_output</pre>";
+} 
+
+
 echo "<a href='index.php'>Back to Homepage</a>";
 
 ?>
