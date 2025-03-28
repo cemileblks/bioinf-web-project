@@ -55,6 +55,24 @@ if (file_exists($alignment_out)) {
     echo "<pre>$alignment_output</pre>";
 } 
 
+// Plotcon Analysis
+$plotcon_out = "scripts/output/$run_id/conservation";
+$plotcon_cmd = "bash scripts/run_plotcon.sh $alignment_out $plotcon_out";
+shell_exec($plotcon_cmd);
+
+// File that will be created by plotcon
+$plotcon_output = "scripts/output/$run_id/conservation.1.png";
+
+if (file_exists($plotcon_output)) {
+    echo "<h3>Conservation Plot</h3>";
+    echo "<img src='$plotcon_output' alt='Conservation Plot' style='width: 100%; max-width: 600px;'>";
+} else {
+    echo "<p style='color: red;'>Conservation plot not found: $plotcon_output</p>";
+}
+
+
+
+
 
 echo "<a href='index.php'>Back to Homepage</a>";
 
