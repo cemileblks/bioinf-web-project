@@ -9,14 +9,14 @@ def insert_sequence(query_id, record):
 
     cur = con.cursor()
 
-    sequence_id = record.id
+    refseq_id = record.id
     sequence = str(record.seq)
     # Extract species from the FASTA description line
     species = record.description.split("[")[-1].rstrip("]") if "[" in record.description else "Unknown"
 
-    sql = "INSERT INTO Sequences (sequence_id, search_id, species, sequence) VALUES (%s, %s, %s, %s)"
+    sql = "INSERT INTO Sequences (refseq_id, search_id, species, sequence) VALUES (%s, %s, %s, %s)"
 
-    cur.execute(sql, (sequence_id, query_id, species, sequence))
+    cur.execute(sql, (refseq_id, query_id, species, sequence))
     con.commit()
     cur.close()
     con.close()

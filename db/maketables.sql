@@ -14,9 +14,10 @@ CREATE TABLE IF NOT EXISTS `Queries` (
 );
 
 -- https://www.geeksforgeeks.org/mysql-on-delete-cascade-constraint/
--- Sequences table: each sequence links to a query via query_id
+-- Sequences table: each sequence links to a query/search via search_id
 CREATE TABLE IF NOT EXISTS `Sequences` (
-  `sequence_id` VARCHAR(50) NOT NULL PRIMARY KEY,  -- NCBI Accession
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `refseq_id` VARCHAR(50) NOT NULL,  -- NCBI RefSeq ID (e.g., XP_123456.1)
   `search_id` VARCHAR(50) NOT NULL,
   `species` VARCHAR(255) NOT NULL,
   `sequence` TEXT NOT NULL,
@@ -27,11 +28,20 @@ CREATE TABLE IF NOT EXISTS `Sequences` (
 CREATE TABLE IF NOT EXISTS `Motifs` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `search_id` VARCHAR(50) NOT NULL,
-  `sequence_id` VARCHAR(50) NOT NULL,
+  `sequence_id` INT NOT NULL,
   `prosite_id` VARCHAR(20) NOT NULL,     -- e.g. PS00123
   `motif_name` VARCHAR(255) NOT NULL,    -- e.g. PROTEIN_KINASE_ATP
   `start_pos` INT UNSIGNED NOT NULL,
   `end_pos` INT UNSIGNED NOT NULL,
   FOREIGN KEY (`search_id`) REFERENCES `Queries`(`search_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`sequence_id`) REFERENCES `Sequences`(`sequence_id`) ON DELETE CASCADE
+  FOREIGN KEY (`sequence_id`) REFERENCES `Sequences`(`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `Analyses` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `search_id` VARCHAR(50) NOT NULL,
+  type ENUM('clustalo', 'plotcon', 'motif', 'custom') NOT NULL,
+  `result_path` TEXT,              -- path to output file (.aln, .png, etc.)
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`search_id`) REFERENCES `Queries`(`search_id`) ON DELETE CASCADE
 );
