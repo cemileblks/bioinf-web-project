@@ -62,6 +62,7 @@ def get_sequences(protein, taxonomic_group, search_limit=10, min_len=0, max_len=
     for record in final_sequences:
         print(f"{record.description}")
         print(f"{record.seq}")
+        print(f"{record.id}")
 
     # create output file only if there are sequences found
     if len(final_sequences) > 0:
@@ -69,8 +70,14 @@ def get_sequences(protein, taxonomic_group, search_limit=10, min_len=0, max_len=
         # populate the database tables
         insert_query(run_id, protein, taxonomic_group, min_len, max_len, len(final_sequences))
 
+        # fasta_records_db_id = []
+
         for record in final_sequences:
-            insert_sequence(run_id, record)
+            seq_id = insert_sequence(run_id, record)
+            record.id = f"seq_{seq_id}"
+            # fasta_records_db_id.append(record)
+        
+        # print(fasta_records_db_id)
 
         # Full file paths based on script location (used chatgpt for this)
         script_dir = os.path.dirname(os.path.abspath(__file__))

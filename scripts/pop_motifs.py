@@ -6,12 +6,13 @@ from config import DB_USER, DB_PASS, DB_NAME
 # https://www.w3schools.com/python/python_regex.asp
 
 # Check for correct usage
-if len(sys.argv) != 3:
-    print("Usage: python3 pop_motifs.py <run_id> <motif_file>")
+if len(sys.argv) != 4:
+    print("Usage: python3 pop_motifs.py <run_id> <motif_file> <seq_internal_db_id>")
     sys.exit(1)
 
 search_id = sys.argv[1]
 motif_file = sys.argv[2]
+sequence_id = int(sys.argv[3])
 
 # start connection to DB
 con = pymysql.connect(host='127.0.0.1', user=DB_USER, passwd=DB_PASS, db=DB_NAME)
@@ -25,9 +26,6 @@ def insert_motif(search_id, sequence_id, motif_name, start, end):
     cur.execute(sql, (search_id, sequence_id, prosite_id, motif_name, start, end))
     print(f"Inserted motif {motif_name} for {current_refseq_id} ({start}-{end})")
 
-# Initalise variables
-current_refseq_id = None
-sequence_id = None
 motif_name = None
 start_pos = None
 end_pos = None
@@ -41,19 +39,6 @@ with open(motif_file, "r") as mt:
         if line.startswith("# Sequence"):
             seq_info = line.split()
             current_refseq_id = seq_info[2]
-
-            # Try to get matching sequence_id from Sequences table
-            cur.execute(
-                "SELECT id FROM Sequences WHERE refseq_id = %s AND search_id = %s",
-                (current_refseq_id, search_id)
-            )
-            result = cur.fetchone()
-            if result:
-                sequence_id = result[0]
-                print(f"Found sequence {current_refseq_id} with ID {sequence_id}")
-            else:
-                print(f"Sequence '{current_refseq_id}' with search_id '{search_id}' not found in DB — skipping.")
-                sequence_id = None
 
         # Regex search for "Start = position X of sequence"
         elif line.startswith("Start"):

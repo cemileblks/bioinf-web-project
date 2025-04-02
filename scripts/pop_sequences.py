@@ -15,8 +15,11 @@ def insert_sequence(query_id, record):
     species = record.description.split("[")[-1].rstrip("]") if "[" in record.description else "Unknown"
 
     sql = "INSERT INTO Sequences (refseq_id, search_id, species, sequence) VALUES (%s, %s, %s, %s)"
-
     cur.execute(sql, (refseq_id, query_id, species, sequence))
+    sequence_id = cur.lastrowid
+
     con.commit()
     cur.close()
     con.close()
+
+    return sequence_id
