@@ -70,13 +70,39 @@ if (file_exists($plotcon_output)) {
     echo "<p style='color: red;'>Conservation plot not found: $plotcon_output</p>";
 }
 
-// Patmatmotifs
+// Run patmatmotifs
 $motif_script = "scripts/run_patmatmotifs.sh";
 $run_motifs_cmd = "bash $motif_script $input_fasta $run_id";
 $motif_output = shell_exec($run_motifs_cmd);
 
 echo "<h3>Motif Analysis Output</h3>";
 echo "<pre>$motif_output</pre>";
+
+// Run the Python script to generate motif frequency plot
+$plot_script = "scripts/plot_motif_freq.py";
+$run_plot_cmd = "python3 $plot_script $run_id";
+shell_exec($run_plot_cmd);
+
+// Path to the generated image
+$motif_img = "scripts/output/$run_id/motif_frequency.png";
+
+// Debugging output
+echo "<pre>Plot command: $run_plot_cmd</pre>";
+
+// Display the plot image
+if (file_exists($motif_img)) {
+    echo "<h3>Motif Frequency Plot</h3>";
+    echo "<img src='$motif_img' style='max-width: 100%; height: auto;' />";
+} else {
+    echo "<p style='color:red;'>Plot not found at: $motif_img</p>";
+}
+
+
+
+
+
+
+
 
 echo "<a href='index.php'>Back to Homepage</a>";
 
