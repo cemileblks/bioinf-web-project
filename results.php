@@ -34,7 +34,7 @@ $output = shell_exec($command);
 
 echo "<h3>Sequences fetched for: $protein in $taxon</h3>";
 echo "<pre>$output</pre>";
-error_log($output);
+// error_log($output);
 
 # Clustalo analysis
 $input_fasta = "scripts/output/$run_id/sequences.fasta";
@@ -70,9 +70,13 @@ if (file_exists($plotcon_output)) {
     echo "<p style='color: red;'>Conservation plot not found: $plotcon_output</p>";
 }
 
+// Patmatmotifs
+$motif_script = "scripts/run_patmatmotifs.sh";
+$run_motifs_cmd = "bash $motif_script $input_fasta $run_id";
+$motif_output = shell_exec($run_motifs_cmd);
 
-
-
+echo "<h3>Motif Analysis Output</h3>";
+echo "<pre>$motif_output</pre>";
 
 echo "<a href='index.php'>Back to Homepage</a>";
 
