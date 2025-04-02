@@ -93,6 +93,28 @@ if (file_exists($tree_out)) {
     add_analysis($pdo, $run_id, 'clustalo', $tree_out, 'ClustalO guide tree (Newick format)');
 }
 
+// === Run plotcon ===
+$plotcon_out_base = "scripts/output/$run_id/conservation";
+$plotcon_img = $plotcon_out_base . ".1.png"; // This is what plotcon generates by default
+
+$plotcon_cmd = escapeshellcmd("bash scripts/run_plotcon.sh \"$alignment_out\" \"$plotcon_out_base\"");
+$plotcon_output = shell_exec($plotcon_cmd);
+
+echo "<h3>Plotcon Output:</h3><pre>$plotcon_output</pre>";
+
+// If the image was generated successfully
+if (file_exists($plotcon_img)) {
+    // Save to database
+    add_analysis($pdo, $run_id, 'plotcon', $plotcon_img, 'Conservation plot (plotcon)');
+    
+    // Display image on page
+    echo "<h3>Conservation Plot</h3>";
+    echo "<img src='$plotcon_img' style='max-width: 100%; height: auto; border: 1px solid #ccc; padding: 10px;'>";
+    echo "<p><a href='$plotcon_img' download>Download Conservation Plot (PNG)</a></p>";
+} else {
+    echo "<p style='color:red;'>Plotcon image not found at: $plotcon_img</p>";
+}
+
 echo "<h3>Analysis Outputs</h3>";
 
 $analysis_sql = "SELECT type, label, result_path, file_type, created_at FROM Analyses WHERE search_id = ?";
