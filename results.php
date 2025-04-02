@@ -4,6 +4,13 @@ require_once 'db/db_connection.php';
 echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js" integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
 echo "<script src='assets/js/jsphylosvg-min.js'></script>";
 
+function add_analysis($run_id, $type, $file_path, $description) {
+    if (file_exists($file_path)) {
+        $cmd = "python3 scripts/pop_analyses.py $run_id $type $file_path \"$description\"";
+        shell_exec($cmd);
+    }
+}
+
 
 $run_id = uniqid("run_");
 echo $run_id;
@@ -41,6 +48,9 @@ echo "<pre>$output</pre>";
 
 # Clustalo analysis
 $input_fasta = "scripts/output/$run_id/sequences.fasta";
+add_analysis($run_id, 'custom', $input_fasta, "Fetched sequences (FASTA)");
+
+
 $alignment_out = "scripts/output/$run_id/alignment.aln";
 $distmat_out = "scripts/output/$run_id/identity_matrix.txt";
 $tree_out = "scripts/output/$run_id/guide_tree.dnd";
@@ -56,7 +66,12 @@ echo "<pre>$clustalo_output</pre>";
 if (file_exists($alignment_out)) {
     $alignment_output = file_get_contents($alignment_out);
     echo "<pre>$alignment_output</pre>";
-} 
+}
+
+add_analysis($run_id, 'clustalo', $alignment_out, "ClustalO alignment file");
+add_analysis($run_id, 'clustalo', $tree_out, "Phylogenetic tree (Newick format)");
+add_analysis($run_id, 'clustalo', $distmat_out, "Sequence identity matrix (text)");
+
 
 // Plotcon Analysis
 $plotcon_out = "scripts/output/$run_id/conservation";
@@ -72,6 +87,7 @@ if (file_exists($plotcon_output)) {
 } else {
     echo "<p style='color: red;'>Conservation plot not found: $plotcon_output</p>";
 }
+add_analysis($run_id, 'plotcon', $plotcon_output, "Conservation plot (plotcon)");
 
 // Run patmatmotifs
 $motif_script = "scripts/run_patmatmotifs.sh";
@@ -99,6 +115,7 @@ if (file_exists($motif_img)) {
 } else {
     echo "<p style='color:red;'>Plot not found at: $motif_img</p>";
 }
+add_analysis($run_id, 'motif', $motif_img, "Motif frequency bar plot");
 
 echo "<h3>Phylogenetic Tree</h3>";
 echo "<div id='phylo_tree' style='width: 100%; height: 600px; border: 1px solid #ccc;'></div>";
@@ -123,6 +140,7 @@ if (file_exists($tree_out)) {
 }
 
 // Generate identity matrix plot
+
 $matrix_script = "scripts/plot_identity_matrix.py";
 $matrix_cmd = "python3 $matrix_script $run_id";
 shell_exec($matrix_cmd);
@@ -135,6 +153,34 @@ if (file_exists($matrix_img)) {
 } else {
     echo "<p style='color:red;'>Identity matrix plot not found.</p>";
 }
+add_analysis($run_id, 'clustalo', $matrix_img, "Sequence identity matrix heatmap");
+
+echo "<h3>Available Analysis Outputs</h3>";
+
+$analysis_sql = "SELECT id, type, result_path, label, file_type, created_at FROM Analyses WHERE search_id = ?";
+$stmt = $pdo->prepare($analysis_sql);
+$stmt->execute([$run_id]);
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if (count($results) > 0) {
+    echo "<table border='1' cellpadding='6'>
+    <tr><th>Type</th><th>Description</th><th>File Type</th><th>Download</th><th>Created</th></tr>";
+    foreach ($results as $row) {
+        $path = $row['result_path'];
+        $filename = basename($path);
+        echo "<tr>
+            <td>{$row['type']}</td>
+            <td>{$row['label']}</td>
+            <td>{$row['file_type']}</td>
+            <td><a href='$path' download='$filename'>Download</a></td>
+            <td>{$row['created_at']}</td>
+        </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "<p>No analysis outputs found.</p>";
+}
+
 
 echo "<a href='index.php'>Back to Homepage</a>";
 

@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS `Analyses` (
   `search_id` VARCHAR(50) NOT NULL,
   type ENUM('clustalo', 'plotcon', 'motif', 'custom') NOT NULL,
   `result_path` TEXT,              -- path to output file (.aln, .png, etc.)
+  `label` VARCHAR(255),               -- Human-readable filename
+  `file_type` VARCHAR(10),            -- e.g. 'png', 'aln', 'txt'
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`search_id`) REFERENCES `Queries`(`search_id`) ON DELETE CASCADE
 );
