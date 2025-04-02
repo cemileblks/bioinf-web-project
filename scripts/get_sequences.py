@@ -74,11 +74,12 @@ def get_sequences(protein, taxonomic_group, search_limit=10, min_len=0, max_len=
 
         for record in final_sequences:
             seq_id = insert_sequence(run_id, record) # get internal sequence ID
-            record.description = f"seq_{seq_id} {record.description}"
-            # record.id = f"seq_{seq_id}"
-            record.id = record.name = record.id.split()[0]
-            # fasta_records_db_id.append(record)
-        
+            refseq = record.id
+            # skip first word of description line to avoid duplicate refseq id
+            desc_without_id = " ".join(record.description.split(" ")[1:])
+            record.description = f"{refseq} seq_{seq_id} {desc_without_id}"
+            record.id = record.name = refseq
+                    
         # print(fasta_records_db_id)
 
         # Full file paths based on script location (used chatgpt for this)
