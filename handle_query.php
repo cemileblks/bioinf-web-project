@@ -60,5 +60,63 @@ foreach ($csv_data as $row) {
 
 echo "</table>";
 echo "<p><a href='scripts/output/$run_id/sequences.fasta' download>Download FASTA</a></p>";
-echo "<a href='index.php'>Back to Homepage</a>";
+
+// === Run ClustalO ===
+$input_fasta = "scripts/output/$run_id/sequences.fasta";
+$alignment_out = "scripts/output/$run_id/alignment.aln";
+$distmat_out = "scripts/output/$run_id/identity_matrix.txt";
+$tree_out = "scripts/output/$run_id/guide_tree.dnd";
+
+$clustalo_cmd = escapeshellcmd("bash scripts/run_clustalo.sh \"$input_fasta\" \"$alignment_out\" \"$distmat_out\" \"$tree_out\"");
+$clustalo_output = shell_exec($clustalo_cmd);
+
+echo "<h3>ClustalO Output:</h3><pre>$clustalo_output</pre>";
+
+// === Insert into Analyses table ===
+$insert_analysis = $pdo->prepare("INSERT INTO Analyses (search_id, type, result_path, label, file_type) VALUES (?, ?, ?, ?, ?)");
+
+// Helper to do it in one line
+function add_analysis($pdo, $run_id, $type, $path, $label) {
+    $ext = pathinfo($path, PATHINFO_EXTENSION);
+    global $insert_analysis;
+    $insert_analysis->execute([$run_id, $type, $path, $label, $ext]);
+}
+
+// Save each result into the DB
+if (file_exists($alignment_out)) {
+    add_analysis($pdo, $run_id, 'clustalo', $alignment_out, 'ClustalO alignment file');
+}
+if (file_exists($distmat_out)) {
+    add_analysis($pdo, $run_id, 'clustalo', $distmat_out, 'Sequence identity matrix');
+}
+if (file_exists($tree_out)) {
+    add_analysis($pdo, $run_id, 'clustalo', $tree_out, 'ClustalO guide tree (Newick format)');
+}
+
+echo "<h3>Analysis Outputs</h3>";
+
+$analysis_sql = "SELECT type, label, result_path, file_type, created_at FROM Analyses WHERE search_id = ?";
+$stmt = $pdo->prepare($analysis_sql);
+$stmt->execute([$run_id]);
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+if ($rows) {
+    echo "<table border='1' cellpadding='6'>
+    <tr><th>Type</th><th>Description</th><th>Download</th><th>Created</th></tr>";
+    foreach ($rows as $row) {
+        $filename = basename($row['result_path']);
+        echo "<tr>
+            <td>{$row['type']}</td>
+            <td>{$row['label']}</td>
+            <td><a href='{$row['result_path']}' download='$filename'>Download</a></td>
+            <td>{$row['created_at']}</td>
+        </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "<p>No analysis files found.</p>";
+}
+
+
+echo "<a href='index.php'>Back to Homepage</a>"
 ?>

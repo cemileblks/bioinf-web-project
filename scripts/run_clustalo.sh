@@ -13,11 +13,3 @@ clustalo -i "$INPUT" -o "$ALIGNMENT_OUT" --outfmt=clu --force
 clustalo -i "$INPUT" -o /dev/null --distmat-out="$DISTMAT_OUT" --percent-id --full --force
 
 clustalo -i "$INPUT" -o /dev/null --guidetree-out="$TREE_OUT" --force
-
-
-
-
-
-
-
-
