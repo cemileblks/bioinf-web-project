@@ -1,6 +1,9 @@
 <?php
-
 session_start();
+require_once 'db/db_connection.php'; 
+echo '<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js" integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>';
+echo "<script src='assets/js/jsphylosvg-min.js'></script>";
+
 
 $run_id = uniqid("run_");
 echo $run_id;
@@ -97,12 +100,41 @@ if (file_exists($motif_img)) {
     echo "<p style='color:red;'>Plot not found at: $motif_img</p>";
 }
 
+echo "<h3>Phylogenetic Tree</h3>";
+echo "<div id='phylo_tree' style='width: 100%; height: 600px; border: 1px solid #ccc;'></div>";
+if (file_exists($tree_out)) {
+    $tree_data = trim(preg_replace('/\s+/', '', file_get_contents($tree_out))); # convert clustalo to more readable by the js library
+    $escaped_tree = htmlspecialchars($tree_data, ENT_QUOTES);
+    echo "
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var newick = '$escaped_tree';
+            new Smits.PhyloCanvas(
+                newick,
+                'phylo_tree',
+                800,
+                600,
+                'rectangular'
+            );
+        });
+    </script>";
+} else {
+    echo "<p style='color:red;'>No tree file found at $tree_out</p>";
+}
 
+// Generate identity matrix plot
+$matrix_script = "scripts/plot_identity_matrix.py";
+$matrix_cmd = "python3 $matrix_script $run_id";
+shell_exec($matrix_cmd);
 
+$matrix_img = "scripts/output/$run_id/identity_matrix.png";
 
-
-
-
+if (file_exists($matrix_img)) {
+    echo "<h3>Sequence Identity Matrix</h3>";
+    echo "<img src='$matrix_img' alt='Identity Matrix' style='max-width: 100%; height: auto;' />";
+} else {
+    echo "<p style='color:red;'>Identity matrix plot not found.</p>";
+}
 
 echo "<a href='index.php'>Back to Homepage</a>";
 
