@@ -15,17 +15,17 @@ while IFS= read -r -d '' fasta_entry; do
     # Skip empty
     [[ -z "$fasta_entry" ]] && continue
 
-    # Extract RefSeq ID from header (assumes it's the first word after '>')
-    refseq_id=$(echo "$fasta_entry" | head -n1 | cut -d' ' -f1 | sed 's/^>//')
+    # Extract internal db sequence ID (just the number after seq_) from header
+    internal_sequence_id=$(echo "$fasta_entry" | head -n1 | grep -o 'seq_[0-9]\+' | sed 's/seq_//')
 
-    echo "Running patmatmotifs on $refseq_id..."
+    echo "Running patmatmotifs on $internal_sequence_id..."
 
     # Run patmatmotifs, feeding sequence via a process substitution
     echo "$fasta_entry" | patmatmotifs -sequence stdin -full Y -prune Y -outfile "$TMP_MOTIF_FILE" -auto
 
     # Immediately call the Python script to populate the DB
-    python3 "$(pwd)/scripts/pop_motifs.py" "$RUN_ID" "$TMP_MOTIF_FILE"
+    python3 "$(pwd)/scripts/pop_motifs.py" "$RUN_ID" "$TMP_MOTIF_FILE" "$internal_sequence_id"
 
-    echo "Finished processing $refseq_id"
+    echo "Finished processing $internal_sequence_id"
     echo
 done

@@ -16,7 +16,7 @@ def insert_sequence(query_id, record):
 
     sql = "INSERT INTO Sequences (refseq_id, search_id, species, sequence) VALUES (%s, %s, %s, %s)"
     cur.execute(sql, (refseq_id, query_id, species, sequence))
-    sequence_id = cur.lastrowid
+    sequence_id = cur.lastrowid # extract the internal sequence id
 
     con.commit()
     cur.close()

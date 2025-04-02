@@ -7,24 +7,25 @@ from config import DB_USER, DB_PASS, DB_NAME
 
 # Check for correct usage
 if len(sys.argv) != 4:
-    print("Usage: python3 pop_motifs.py <run_id> <motif_file> <seq_internal_db_id>")
+    print("Usage: python3 pop_motifs.py <run_id> <motif_file> <internal_seq_id>")
     sys.exit(1)
 
 search_id = sys.argv[1]
 motif_file = sys.argv[2]
-sequence_id = int(sys.argv[3])
+internal_sequence_id = int(sys.argv[3])
 
 # start connection to DB
 con = pymysql.connect(host='127.0.0.1', user=DB_USER, passwd=DB_PASS, db=DB_NAME)
 cur = con.cursor()
 
 # Function that inserts a single motif entry into the DB
-def insert_motif(search_id, sequence_id, motif_name, start, end):
+def insert_motif(search_id, internal_sequence_id, motif_name, start, end):
     prosite_id = motif_name  # Extract real ID later (or delete)
 
     sql = "INSERT INTO Motifs (search_id, sequence_id, prosite_id, motif_name, start_pos, end_pos) VALUES (%s, %s, %s, %s, %s, %s)"
-    cur.execute(sql, (search_id, sequence_id, prosite_id, motif_name, start, end))
-    print(f"Inserted motif {motif_name} for {current_refseq_id} ({start}-{end})")
+    cur.execute(sql, (search_id, internal_sequence_id, prosite_id, motif_name, start, end))
+    print(f"Inserted motif {motif_name} for sequence ID {internal_sequence_id} ({start}-{end})")
+
 
 motif_name = None
 start_pos = None
@@ -52,8 +53,12 @@ with open(motif_file, "r") as mt:
         elif line.startswith("Motif"):
             motif_name = line.split("=")[1].strip()
 
-        if sequence_id and motif_name and start_pos is not None and end_pos is not None:
-            insert_motif(search_id, sequence_id, motif_name, start_pos, end_pos)
+        if internal_sequence_id and motif_name and start_pos is not None and end_pos is not None:
+            # insert_motif(search_id, internal_sequence_id, motif_name, start_pos, end_pos)
+            try:
+                insert_motif(search_id, internal_sequence_id, motif_name, start_pos, end_pos)
+            except Exception as e:
+                print(f"Failed to insert motif: {motif_name} ({start_pos}-{end_pos}) – {e}")
             motif_name = None
             start_pos = None
             end_pos = None
