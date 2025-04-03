@@ -1,8 +1,9 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #f7f9fc;
   color: #333;
+  /* font-size: 18px; */
 }
 
 /* Navbar styling */
@@ -137,6 +138,7 @@ body, html {
 
 form fieldset {
   border-radius: 5px;
+  padding: 12px;
 }
 
 .btn-submit {
@@ -173,8 +175,6 @@ form fieldset {
   margin-top: 4px;
 }
 
-
-
 /* Messages styling */
 .error-msg,
 .info-msg {
@@ -183,6 +183,29 @@ form fieldset {
   padding: 10px;
   border-radius: 6px;
   margin-bottom: 15px;
+}
+
+/* Page styles */
+.content-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: sans-serif;
+  line-height: 1.6;
+}
+
+.content-container h2, 
+.content-container h3 {
+  margin-top: 40px;
+}
+
+.content-container a {
+  color: #5b3b8a;
+  text-decoration: none;
+}
+
+.content-container a:hover {
+  text-decoration: underline;
 }
 
 /* Footer styles */
@@ -203,4 +226,30 @@ footer p a {
 
 footer a:hover {
   text-decoration: underline;
+}
+
+/* Stlyes for warning message if user not logged in */
+
+.login-warning {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f9f7fb;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 80px auto;
+}
+
+.login-warning h2 {
+  color: #cc0033;
+}
+
+.login-warning .btn {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 16px;
+  background-color: #5b3b8a;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
 }

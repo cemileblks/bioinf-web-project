@@ -10,6 +10,7 @@ echo <<< _BASEHEAD
   <meta charset="UTF-8">
   <title>$pageTitle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
@@ -18,7 +19,7 @@ _BASEHEAD;
 include 'navbar.php';
 
 echo <<< _WRAPPER
-<main class="container" style="padding: 50px;">
+<main class="container">
 $pageContent
 </main>
 _WRAPPER;
