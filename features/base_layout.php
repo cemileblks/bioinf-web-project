@@ -24,6 +24,6 @@ $pageContent
 _WRAPPER;
 
 include 'footer.php';
-
-echo "</body></html>";
+echo '<script src="./assets/js/script.js"></script>';
+echo '</body></html>';
 ?>

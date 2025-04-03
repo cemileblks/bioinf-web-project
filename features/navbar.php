@@ -4,7 +4,7 @@ $navbarLinks = '';
 if (isset($_SESSION['user_id'])) {
     $navbarLinks .= <<< _LOGGEDIN
         <a href="user_queries.php">📁 My Queries</a>
-        <a href="logout_user.php">🚪 Logout</a>
+        <a href="#" class="logout-link">🚪 Logout</a>
 _LOGGEDIN;
 } else {
     $navbarLinks .= <<< _LOGGEDOUT
