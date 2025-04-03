@@ -196,54 +196,130 @@ if (file_exists($identity_img)) {
     echo "<p style='color:red;'>Identity matrix plot not found at $identity_img</p>";
 }
 
-// Run patmatmotifs
+// Run patmatmotifs to identify motifs in sequences using EMBOSS
 echo "<h2>Motif Analysis</h2>";
+
+// Construct and execute shell command to run the motif script
 $motif_script = escapeshellcmd("bash scripts/new_run_patmatmotifs.sh \"$input_fasta\" \"$run_id\"");
 shell_exec($motif_script);
+
+// Path to the resulting TSV file
 $motif_tsv = "scripts/output/$run_id/motif_results.tsv";
 
+// Proceed only if the TSV exists
 if (file_exists($motif_tsv)) {
-    $stmt = $pdo->prepare("SELECT id, refseq_id FROM Sequences WHERE search_id = ?");
+
+    // Get a map of RefSeq IDs to internal DB sequence IDs (and species)
+    $stmt = $pdo->prepare("SELECT id, refseq_id, species FROM Sequences WHERE search_id = ?");
     $stmt->execute([$run_id]);
+
+    // Build PHP associative array: refseq_id => [id, species]
     $map = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
-        $map[$row['refseq_id']] = $row['id'];
+        $map[$row['refseq_id']] = [
+            'id' => $row['id'],
+            'species' => $row['species']
+        ];
     }
 
-    $insert_motif = $pdo->prepare("INSERT INTO Motifs (search_id, sequence_id, prosite_id, motif_name, start_pos, end_pos) VALUES (?, ?, ?, ?, ?, ?)");
-    $inserted = 0;
+    // Prepare SQL insert statement for motif hits
+    $insert_motif = $pdo->prepare("
+        INSERT INTO Motifs (search_id, sequence_id, prosite_id, motif_name, start_pos, end_pos)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
 
+    $inserted = 0;
+    $parsed_motifs = []; // Store valid hits for displaying as HTML table
+
+    // Read and parse the TSV
     $fh = fopen($motif_tsv, 'r');
     while (($line = fgetcsv($fh, 0, "\t")) !== false) {
         if (count($line) < 5) continue;
+
         [$refseq, $prosite, $name, $start, $end] = $line;
         $refseq = trim($refseq);
+
+        // Make sure this RefSeq ID exists in the mapping
         if (isset($map[$refseq])) {
-            $insert_motif->execute([$run_id, $map[$refseq], $prosite, $name, $start, $end]);
+            $seq_id = $map[$refseq]['id'];
+            $species = $map[$refseq]['species'];
+
+            // Insert the motif hit into the Motifs table
+            $insert_motif->execute([$run_id, $seq_id, $prosite, $name, $start, $end]);
             $inserted++;
+
+            // Add to in-memory array to render HTML table later
+            $parsed_motifs[] = [
+                'refseq_id' => $refseq,
+                'species' => $species,
+                'motif_name' => $name,
+                'start' => $start,
+                'end' => $end
+            ];
         }
     }
     fclose($fh);
-    echo "<p>✅ Found $inserted motif hits for sequences.</p>";
-    add_analysis($pdo, $run_id, 'motif', $motif_tsv, 'Motif results TSV');
-    echo "<p><a href='$motif_tsv' download>⬇️ Download Motif TSV</a></p>";
+
+    // Report how many motifs were found
+    if ($inserted > 0) {
+        echo "<p>✅ Found <strong>$inserted</strong> motif hits for sequences.</p>";
+
+        // Display a table of motif hits (RefSeq ID, Species, Motif, Start, End)
+        echo "<table border='1' cellpadding='6'>
+        <tr><th>RefSeq ID</th><th>Species</th><th>Motif Name</th><th>Start</th><th>End</th></tr>";
+        foreach ($parsed_motifs as $m) {
+            echo "<tr>
+                <td>{$m['refseq_id']}</td>
+                <td>{$m['species']}</td>
+                <td>{$m['motif_name']}</td>
+                <td>{$m['start']}</td>
+                <td>{$m['end']}</td>
+            </tr>";
+        }
+        echo "</table>";
+
+        // Record the TSV file in the Analyses table
+        add_analysis($pdo, $run_id, 'motif', $motif_tsv, 'Motif results TSV');
+
+        // Show download link
+        echo "<p><a href='$motif_tsv' download>⬇️ Download Motif TSV</a></p>";
+    } else {
+        // No valid motif hits found
+        echo "<p>⚠️ No motif hits were found for these sequences.</p>";
+    }
 }
 
 // Motif Frequency Plot
+// Query motif frequencies for this search run (how many times each motif appeared)
 $freq_sql = "SELECT motif_name, COUNT(*) as count FROM Motifs WHERE search_id = ? GROUP BY motif_name";
 $stmt = $pdo->prepare($freq_sql);
 $stmt->execute([$run_id]);
 $motif_freq = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Write the frequencies into a temporary CSV file to be used for plotting
 $freq_csv = "scripts/output/$run_id/motif_freq.csv";
 $fp = fopen($freq_csv, 'w');
+
+// Add header row to CSV
 fputcsv($fp, ['motif_name', 'count']);
-foreach ($motif_freq as $row) fputcsv($fp, [$row['motif_name'], $row['count']]);
-fclose($fp);
+
+// Add each motif and its count
+foreach ($motif_freq as $row) {
+    fputcsv($fp, [$row['motif_name'], $row['count']]);
+}
+fclose($fp); // Done writing
+
+// Call the Python script to generate a bar plot from the CSV data
 $plot_cmd = escapeshellcmd("python3 scripts/plot_motif_freq_from_csv.py \"$run_id\" \"$freq_csv\" \"$protein\" \"$taxon\"");
 shell_exec($plot_cmd);
+
+// Display the resulting image on the page (if it was created successfully)
 $plot_path = "scripts/output/$run_id/motif_frequency.png";
 if (file_exists($plot_path)) {
+    // Store image in database under Analyses table
     add_analysis($pdo, $run_id, 'motif', $plot_path, 'Motif frequency plot');
+
+    // Display the image and download option
     echo "<h2>📊 Motif Frequency Bar Chart</h2>";
     echo "<img src='$plot_path' style='max-width:100%; height:auto; border:1px solid #ccc; padding:10px;'>";
     echo "<p><a href='$plot_path' download>⬇️ Download Frequency Bar chart</a></p>";
@@ -277,13 +353,22 @@ if ($rows) {
 echo <<< _EXTRAS
 <div class='external-links'>
     <h2>🔗 Next Steps & Other Useful Tools</h2>
+    <p>Now that you've generated and downloaded your results, you might want to continue your analysis using external databases:</p>
     <ul>
-        <li><a href="https://www.uniprot.org/" target="_blank">UniProt</a> — Explore more detailed protein information</li>
-        <li><a href="https://prosite.expasy.org/" target="_blank">PROSITE</a> — Investigate motifs and functional sites</li>
-        <li><a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins" target="_blank">NCBI BLASTP</a> — Query protein to find similar proteins</li>
+        <li>
+            <a href="https://www.uniprot.org/" target="_blank">UniProt</a> — Search for your proteins or sequences to find functional annotations, domain info, and cross-references to other databases.
+        </li>
+        <li>
+            <a href="https://prosite.expasy.org/" target="_blank">PROSITE</a> — Look up the motifs identified to understand what biological function they may be associated with.
+        </li>
+        <li>
+            <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins" target="_blank">NCBI BLASTP</a> — Paste in a sequence from your FASTA file to search for similar proteins across all organisms.
+        </li>
     </ul>
+    <p>These tools can help you interpret your results or plan further analysis.</p>
 </div>
 _EXTRAS;
+
 
 echo "<p style='margin-top: 30px;'><a href='index.php'>⬅️ Back to Homepage</a></p>";
 echo "</div>";
