@@ -37,14 +37,74 @@ main {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
   font-size: 1.5em;
   color: #6a4c93;
+  text-decoration: none;
 }
+
+.logo-icon {
+  height: 38px;
+  width: 38px;
+  margin-right: 8px;
+}
+
 
 .logout-link:hover {
   text-decoration: underline;
   font-weight: bold;
   text-decoration: none;
+}
+
+/* Dropdown container inside navbar */
+.navbar .dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 20px; /* match spacing of other links */
+}
+
+/* Dropdown button to match links */
+.navbar .dropbtn {
+  background: none;
+  border: none;
+  font: inherit;
+  color: #6a4c93;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.navbar .dropbtn:hover {
+  color: #ab8fe3;
+}
+
+/* Dropdown menu styling */
+.navbar .dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 999;
+}
+
+.navbar .dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  display: block;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+.navbar .dropdown-content a:hover {
+  background-color: #f0f0f0;
+}
+
+/* Show dropdown on hover */
+.navbar .dropdown:hover .dropdown-content {
+  display: block;
 }
 
 /* Hero banner styling */
