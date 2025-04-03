@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
 -- Queries table: each query has a unique run ID (TEXT from PHP)
 CREATE TABLE IF NOT EXISTS `Queries` (
   `search_id` VARCHAR(50) PRIMARY KEY NOT NULL,  -- PHP run_id
-  `user_id` INT UNSIGNED NOT NULL,
+  `user_id` INT UNSIGNED NULL,
   `protein_family` VARCHAR(255) NOT NULL,
   `taxon` VARCHAR(255) NOT NULL,
   `min_len` INT UNSIGNED NOT NULL,

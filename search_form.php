@@ -44,11 +44,13 @@ echo <<< _FORM
     <div class="form-group">
         <label for="protein">Protein Family:</label>
         <input type="text" name="protein" id="protein" class="input-field" value="$protein" required>
+        <small class="input-hint">e.g. hemoglobin, cytochrome c, collagen</small>
     </div>
 
     <div class="form-group">
         <label for="taxon">Taxonomic Group:</label>
         <input type="text" name="taxon" id="taxon" class="input-field" value="$taxon" required>
+        <small class="input-hint">e.g. Mammalia, Fungi, Bacteria</small>
     </div>
 
     <fieldset>
@@ -69,8 +71,10 @@ echo <<< _FORM
             <input type="number" name="max_len" value="$max_len" min="0" placeholder="Max Length" class="input-field">
         </div>
     </fieldset>
-
     <button type="submit" class="btn-submit">Submit Search</button>
+    <p class="input-note" style="margin-top: 10px; color: #666;">
+    ⏳ Note: Searches requesting more than <strong>5 sequences</strong> might take up to a minute. Please be patient after submitting.
+    </p>
 </form>
 _FORM;
 

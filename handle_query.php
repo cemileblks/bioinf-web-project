@@ -38,8 +38,19 @@ function show_error_page($message) {
 $protein = $_POST['protein'];
 $taxon = $_POST['taxon'];
 $limit = $_POST['limit'] ?? 10;
-$min_len = isset($_POST['use_length_filter']) ? (int)$_POST['min_len'] : 0;
-$max_len = isset($_POST['use_length_filter']) && $_POST['max_len'] !== '' ? (int)$_POST['max_len'] : 100000;
+
+// Only apply length filtering if the checkbox is ticked AND values are provided
+if (
+    isset($_POST['use_length_filter']) &&
+    $_POST['min_len'] !== '' &&
+    $_POST['max_len'] !== ''
+) {
+    $min_len = (int)$_POST['min_len'];
+    $max_len = (int)$_POST['max_len'];
+} else {
+    $min_len = 0;
+    $max_len = 100000;
+}
 
 if ($min_len > $max_len) {
     show_error_page("Minimum sequence length cannot be greater than maximum length.");

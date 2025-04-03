@@ -158,8 +158,6 @@ body, html {
   background-color: #a47ac2;
 }
 
-
-
 /* General page feature styles */
 .btn {
   background-color: #7d5ba6;
@@ -196,11 +194,18 @@ body, html {
 .auth-form,
 .search-form {
   max-width: 400px;
-  margin: 0 auto;
-  padding: 30px;
+  margin: 30px auto;
+  padding: 25px 30px;
   background-color: #f9f6ff;
   border: 1px solid #ddd;
   border-radius: 8px;
+}
+
+.input-hint {
+  display: block;
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 4px;
 }
 
 form fieldset {
