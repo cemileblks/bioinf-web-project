@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    die("❌ You must be logged in to perform a search. <a href='login_user.php'>Log in</a>");
+}
+$user_id = $_SESSION['user_id'];
 require_once 'db/db_connection.php';
 
 $protein = $_POST['protein'];
@@ -27,10 +31,10 @@ $csv_data = array_map('str_getcsv', file($csv_path));
 array_shift($csv_data); // Remove header
 
 // Insert query
-$query_sql = "INSERT INTO Queries (search_id, protein_family, taxon, min_len, max_len, no_of_sequences)
-              VALUES (?, ?, ?, ?, ?, ?)";
+$query_sql = "INSERT INTO Queries (search_id, user_id, protein_family, taxon, min_len, max_len, no_of_sequences)
+              VALUES (?, ?, ?, ?, ?, ?, ?)";
 $stmt = $pdo->prepare($query_sql);
-$stmt->execute([$run_id, $protein, $taxon, $min_len, $max_len, count($csv_data)]);
+$stmt->execute([$run_id, $user_id, $protein, $taxon, $min_len, $max_len, count($csv_data)]);
 
 // Insert sequences
 $seq_sql = "INSERT INTO Sequences (refseq_id, search_id, species, sequence)

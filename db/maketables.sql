@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `Motifs` (
 CREATE TABLE IF NOT EXISTS `Analyses` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `search_id` VARCHAR(50) NOT NULL,
-  type ENUM('clustalo', 'plotcon', 'motif', 'custom') NOT NULL,
+  type ENUM('clustalo', 'plotcon', 'motif', 'identity_matrix' 'custom') NOT NULL,
   `result_path` TEXT,              -- path to output file (.aln, .png, etc.)
   `label` VARCHAR(255),               -- Human-readable filename
   `file_type` VARCHAR(32),            -- e.g. 'png', 'aln', 'txt'
