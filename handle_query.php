@@ -139,6 +139,57 @@ if ($rows) {
     echo "<p>No analysis files found.</p>";
 }
 
+// === Run patmatmotifs ===
+$motif_script = escapeshellcmd("bash scripts/new_run_patmatmotifs.sh \"$input_fasta\" \"$run_id\"");
+$motif_output = shell_exec($motif_script);
+echo "<h3>Motif Analysis Output:</h3><pre>$motif_output</pre>";
+
+$motif_tsv = "scripts/output/$run_id/motif_results.tsv";
+
+if (!file_exists($motif_tsv)) {
+    echo "<p style='color:red;'>Motif TSV not found: $motif_tsv</p>";
+} else {
+    $stmt = $pdo->prepare("SELECT id, refseq_id FROM Sequences WHERE search_id = ?");
+    $stmt->execute([$run_id]);
+    $map = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $map[$row['refseq_id']] = $row['id'];
+    }
+
+    $insert_motif = $pdo->prepare("
+        INSERT INTO Motifs (search_id, sequence_id, prosite_id, motif_name, start_pos, end_pos)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    $rows = [];
+    $fh = fopen($motif_tsv, 'r');
+    $header = fgetcsv($fh, 0, "\t"); // skip header
+    while (($line = fgetcsv($fh, 0, "\t")) !== false) {
+    $rows[] = $line;
+    }
+    fclose($fh);
+
+    $inserted = 0;
+    foreach ($rows as $row) {
+        if (count($row) < 5) {
+            // Skip invalid or empty lines
+            continue;
+        }
+    
+        list($refseq, $prosite, $name, $start, $end) = $row;
+        $refseq = trim($refseq);
+        if (isset($map[$refseq])) {
+            error_log("Motif refseq not found in DB: [$refseq]");
+            $insert_motif->execute([$run_id, $map[$refseq], $prosite, $name, $start, $end]);
+            $inserted++;
+        }
+    }
+
+    echo "<p>✅ Inserted $inserted motif hits.</p>";
+}
+
+echo "<p><a href='$motif_tsv' download>Download Motif TSV</a></p>";
+
 
 echo "<a href='index.php'>Back to Homepage</a>"
 ?>
