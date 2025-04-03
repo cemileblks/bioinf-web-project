@@ -3,14 +3,14 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     die("❌ You must be logged in to perform a search. <a href='login_user.php'>Log in</a>");
 }
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'] ?? null;
 require_once 'db/db_connection.php';
 
 $protein = $_POST['protein'];
 $taxon = $_POST['taxon'];
 $limit = $_POST['limit'] ?? 10;
 $min_len = isset($_POST['use_length_filter']) ? (int)$_POST['min_len'] : 0;
-$max_len = isset($_POST['use_length_filter']) ? (int)$_POST['max_len'] : 100000;
+$max_len = isset($_POST['use_length_filter']) && $_POST['max_len'] !== '' ? (int)$_POST['max_len'] : 100000;
 
 if ($min_len > $max_len) {
     die("Error: Minimum length cannot be greater than maximum length.");

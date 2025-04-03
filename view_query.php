@@ -7,35 +7,40 @@ if (!$run_id) {
     die("❌ No run ID specified.");
 }
 
-// Check if user owns this query (for security)
-if (!isset($_SESSION['user_id'])) {
+$isDemo = isset($_GET['demo']);
+if (!$isDemo && !isset($_SESSION['user_id'])) {
     die("❌ Please <a href='login_user.php'>log in</a> to view your saved query.");
 }
 
-$stmt = $pdo->prepare("SELECT * FROM Queries WHERE search_id = ? AND user_id = ?");
-$stmt->execute([$run_id, $_SESSION['user_id']]);
+$stmt = $pdo->prepare("SELECT * FROM Queries WHERE search_id = ?" . ($isDemo ? '' : ' AND user_id = ?'));
+$stmt->execute($isDemo ? [$run_id] : [$run_id, $_SESSION['user_id']]);
 $query = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$query) {
-    die("⚠️ No such query found or you don't have access.");
+    die("⚠️ No such query found.");
 }
 
-// === Sequences ===
+// Only check for ownership if query has a user_id
+if ($query['user_id'] && (!isset($_SESSION['user_id']) || $_SESSION['user_id'] != $query['user_id'])) {
+    die("❌ You do not have permission to view this query.");
+}
+
+// Sequences
 $seq_stmt = $pdo->prepare("SELECT refseq_id, species, sequence FROM Sequences WHERE search_id = ?");
 $seq_stmt->execute([$run_id]);
 $sequences = $seq_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// === Motifs ===
+// Motifs
 $motif_stmt = $pdo->prepare("SELECT * FROM Motifs WHERE search_id = ?");
 $motif_stmt->execute([$run_id]);
 $motifs = $motif_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// === Analyses ===
+// Analyses
 $analysis_stmt = $pdo->prepare("SELECT * FROM Analyses WHERE search_id = ?");
 $analysis_stmt->execute([$run_id]);
 $analyses = $analysis_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// --- Build HTML ---
+// Render HTML (start output buffering)
 ob_start();
 
 echo "<h1>Previous Query: {$run_id}</h1>";
@@ -79,6 +84,7 @@ if ($analyses) {
     echo "<p>No analysis outputs found.</p>";
 }
 
+// Get the contents of the output buffer and turn it off
 $pageContent = ob_get_clean();
 $pageTitle = "View Query $run_id";
 include './features/base_layout.php';
