@@ -1,9 +1,16 @@
-body {
-  margin: 0;
+html, body {
   font-family: 'Poppins', sans-serif;
   background-color: #f7f9fc;
   color: #333;
-  /* font-size: 18px; */
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
 }
 
 /* Navbar styling */
@@ -208,26 +215,6 @@ form fieldset {
   text-decoration: underline;
 }
 
-/* Footer styles */
-footer {
-  text-align: center;
-  padding: 20px;
-  background-color: #e7e3f0;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  font-size: 0.9em;
-  color: #555;
-}
-
-footer p a {
-  color: #6a4c93;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
 /* Stlyes for warning message if user not logged in */
 .login-warning {
   text-align: center;
@@ -276,4 +263,23 @@ footer a:hover {
   text-decoration: none;
   padding: 10px 20px;
   border-radius: 6px;
+}
+
+/* Footer styles */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #e7e3f0;
+  font-size: 0.9em;
+  color: #555;
+  margin-top: auto;
+}
+
+footer p a {
+  color: #6a4c93;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }

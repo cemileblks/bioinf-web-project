@@ -66,7 +66,7 @@ echo "<h1>🔍 Search Results: {$query['protein_family']} in {$query['taxon']}</
 echo "<p><strong>Date:</strong> {$query['created_at']}</p>";
 
 // Sequences
-echo "<h2>🔬 Sequences Retrieved</h2>";
+echo "<h2>Sequences Retrieved</h2>";
 echo "<p><strong>Total:</strong> " . count($sequences) . "</p>";
 if ($sequences) {
     echo "<table border='1' cellpadding='6'><tr><th>RefSeq ID</th><th>Species</th><th>Length</th></tr>";
@@ -166,12 +166,20 @@ if ($analyses) {
 // Resources
 echo <<< _RESOURCES
 <div class='external-links'>
-    <h2>🔗 External Resources</h2>
+    <h2>🔗 Next Steps & Other Useful Tools</h2>
+    <p>You might want to continue your analysis for this search using external databases:</p>
     <ul>
-        <li><a href="https://www.uniprot.org/" target="_blank">UniProt</a> — for additional protein annotations</li>
-        <li><a href="https://prosite.expasy.org/" target="_blank">PROSITE</a> — to investigate motif patterns</li>
-        <li><a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins" target="_blank">NCBI BLASTP</a> — to compare your sequences</li>
+        <li>
+            <a href="https://www.uniprot.org/" target="_blank">UniProt</a> — Search for your proteins or sequences to find functional annotations, domain info, and cross-references to other databases.
+        </li>
+        <li>
+            <a href="https://prosite.expasy.org/" target="_blank">PROSITE</a> — Look up the motifs identified to understand what biological function they may be associated with.
+        </li>
+        <li>
+            <a href="https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE=Proteins" target="_blank">NCBI BLASTP</a> — Paste in a sequence from your FASTA file to search for similar proteins across all organisms.
+        </li>
     </ul>
+    <p>These tools can help you interpret your results or plan further analysis.</p>
 </div>
 _RESOURCES;
 

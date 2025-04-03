@@ -13,8 +13,9 @@ $queries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Start output buffering 
 ob_start();
-
+echo "<div class='content-container'>";
 echo <<< _HTML
+
 <h1>📁 My Queries</h1>
 _HTML;
 
@@ -34,7 +35,7 @@ if ($queries) {
 } else {
     echo "<p>You haven't submitted any queries yet!</p>";
 }
-
+echo "</div>";
 // Get the contents of the output buffer and turn it off
 $pageContent = ob_get_clean();
 // Set page title for base_layout.php template
