@@ -1,7 +1,7 @@
 <?php
 
 // Must set $pageTitle and $pageContent before including this layout on page
-$pageTitle = $pageTitle ?? "Protein Swirl 🌀";
+$pageTitle = $pageTitle ?? "Protein Swirl";
 
 echo <<< _BASEHEAD
 <!DOCTYPE html>
@@ -18,7 +18,7 @@ _BASEHEAD;
 include 'navbar.php';
 
 echo <<< _WRAPPER
-<main class="container" style="padding: 30px;">
+<main class="container" style="padding: 50px;">
 $pageContent
 </main>
 _WRAPPER;

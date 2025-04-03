@@ -1,0 +1,129 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fc;
+  color: #333;
+}
+
+/* Navbar styling */
+.navbar {
+  background-color: #f3ecfa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 70px 15px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.navbar a {
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: normal;
+  color: #6a4c93;
+  transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+  color: #ab8fe3;
+}
+
+.logo {
+  font-size: 1.5em;
+  color: #6a4c93;
+}
+
+/* General page feature styles */
+.btn {
+  background-color: #7d5ba6;
+  padding: 10px 20px;
+  margin: 0 10px;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.btn:hover {
+  background-color: #5b3e91;
+}
+
+/* Form styling */
+.form-heading {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.input-field {
+  width: 100%;
+  max-width: 300px;
+  padding: 8px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.auth-form,
+.search-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #f9f6ff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+form fieldset {
+  border-radius: 5px;
+}
+
+.btn-submit {
+  background-color: #7D5BA6;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.btn-submit:hover {
+  background-color: #a892c4;
+}
+
+.sub-text-form {
+  text-align: center;
+}
+
+/* Messages styling */
+.error-msg,
+.info-msg {
+  color: #a94442;
+  background-color: #f2dede;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+/* Footer styles */
+footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #e7e3f0;
+  margin-top: 30px;
+  margin-bottom: 0px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+footer p a {
+  color: #6a4c93;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}

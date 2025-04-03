@@ -21,6 +21,7 @@ echo <<< _NAVBAR
         </div>
         <div class="nav-right">
             <a href="search_form.php">🔍 Search</a>
+            <a href="credits.php">📚 Statement of Credits</a>
             $navbarLinks
         </div>
     </nav>
