@@ -117,6 +117,7 @@ if (file_exists($motif_img)) {
 }
 add_analysis($run_id, 'motif', $motif_img, "Motif frequency bar plot");
 
+
 echo "<h3>Phylogenetic Tree</h3>";
 echo "<div id='phylo_tree' style='width: 100%; height: 600px; border: 1px solid #ccc;'></div>";
 if (file_exists($tree_out)) {
@@ -165,6 +166,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (count($results) > 0) {
     echo "<table border='1' cellpadding='6'>
     <tr><th>Type</th><th>Description</th><th>File Type</th><th>Download</th><th>Created</th></tr>";
+    
     foreach ($results as $row) {
         $path = $row['result_path'];
         $filename = basename($path);
