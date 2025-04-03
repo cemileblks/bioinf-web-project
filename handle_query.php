@@ -19,6 +19,21 @@ if (!isset($_SESSION['user_id'])) {
 require_once 'db/db_connection.php';
 $user_id = $_SESSION['user_id'] ?? null;
 
+function show_error_page($message) {
+    $pageTitle = "Error";
+    ob_start();
+    echo <<< _ERROR
+    <div class="error-message">
+        <h2>Something went wrong</h2>
+        <p>$message</p>
+        <p><a href="search_form.php" class="btn">🔍 Try Again</a></p>
+    </div>
+    _ERROR;
+    $pageContent = ob_get_clean();
+    include './features/base_layout.php';
+    exit;
+}
+
 // Collect and validate inputs
 $protein = $_POST['protein'];
 $taxon = $_POST['taxon'];
@@ -27,7 +42,7 @@ $min_len = isset($_POST['use_length_filter']) ? (int)$_POST['min_len'] : 0;
 $max_len = isset($_POST['use_length_filter']) && $_POST['max_len'] !== '' ? (int)$_POST['max_len'] : 100000;
 
 if ($min_len > $max_len) {
-    die("Error: Minimum length cannot be greater than maximum length.");
+    show_error_page("Minimum sequence length cannot be greater than maximum length.");
 }
 
 $run_id = uniqid("run_");
@@ -40,7 +55,7 @@ $output = shell_exec($cmd);
 // Parse result to CSV
 $csv_path = "scripts/output/$run_id/sequences.csv";
 if (!file_exists($csv_path)) {
-    die("Error: Sequence CSV not found.");
+    show_error_page("No sequences were found for this query. Try changing your parameters.");
 }
 
 $csv_data = array_map('str_getcsv', file($csv_path));
