@@ -190,6 +190,40 @@ if (!file_exists($motif_tsv)) {
 
 echo "<p><a href='$motif_tsv' download>Download Motif TSV</a></p>";
 
+if (file_exists($motif_tsv)) {
+    add_analysis($pdo, $run_id, 'motif', $motif_tsv, 'Motif results (TSV)');
+}
+
+// === Fetch motif counts directly from DB for plotting ===
+$freq_sql = "SELECT motif_name, COUNT(*) as count FROM Motifs WHERE search_id = ? GROUP BY motif_name";
+$stmt = $pdo->prepare($freq_sql);
+$stmt->execute([$run_id]);
+$motif_freq = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Write to temporary CSV
+$freq_csv = "scripts/output/$run_id/motif_freq.csv";
+$fp = fopen($freq_csv, 'w');
+fputcsv($fp, ['motif_name', 'count']);
+foreach ($motif_freq as $row) {
+    fputcsv($fp, [$row['motif_name'], $row['count']]);
+}
+fclose($fp);
+
+// Run the plotting script
+$plot_cmd = escapeshellcmd("python3 scripts/plot_motif_freq_from_csv.py \"$run_id\" \"$freq_csv\" \"$protein\" \"$taxon\"");
+$plot_output = shell_exec($plot_cmd);
+
+echo "<h3>Motif Frequency Plot:</h3><pre>$plot_output</pre>";
+
+$plot_path = "scripts/output/$run_id/motif_frequency.png";
+if (file_exists($plot_path)) {
+    echo "<img src='$plot_path' style='max-width: 100%; height: auto; border: 1px solid #ccc; padding: 10px;'>"; 
+    echo "<p><a href='$plot_path' download>Download Motif Frequency Plot (PNG)</a></p>";
+    add_analysis($pdo, $run_id, 'motif', $plot_path, 'Motif frequency plot');
+} else {
+    echo "<p style='color:red;'>Motif frequency plot not found at: $plot_path</p>";
+}
+
 
 echo "<a href='index.php'>Back to Homepage</a>"
 ?>
