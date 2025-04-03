@@ -1,5 +1,5 @@
 <?php
-session_start();
+ session_start();
 echo <<< _HEAD1
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +14,7 @@ echo <<< _HEAD1
 _HEAD1;
 
 echo <<< _FORM
-    <form action="../web_project/results.php" method="post">
+    <form action="../web_project/handle_query.php" method="post">
         <label for="protein">Protein Family</label><br>
         <input type="text" name="protein" id="protein" required><br><br>
 
