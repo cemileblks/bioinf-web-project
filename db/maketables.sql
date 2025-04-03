@@ -1,16 +1,27 @@
 CREATE DATABASE IF NOT EXISTS s2756532_web_project ;
 use s2756532_web_project ;
 
+CREATE TABLE IF NOT EXISTS `Users` (
+  `user_id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `email` VARCHAR(255) NOT NULL UNIQUE,
+  `password` VARCHAR(255) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- https://www.w3schools.com/mysql/mysql_datatypes.asp
 -- Queries table: each query has a unique run ID (TEXT from PHP)
 CREATE TABLE IF NOT EXISTS `Queries` (
   `search_id` VARCHAR(50) PRIMARY KEY NOT NULL,  -- PHP run_id
+  `user_id` INT UNSIGNED NOT NULL,
   `protein_family` VARCHAR(255) NOT NULL,
   `taxon` VARCHAR(255) NOT NULL,
   `min_len` INT UNSIGNED NOT NULL,
   `max_len` INT UNSIGNED NOT NULL,
   `no_of_sequences` INT UNSIGNED NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE CASCADE
 );
 
 -- https://www.geeksforgeeks.org/mysql-on-delete-cascade-constraint/
@@ -43,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `Analyses` (
   type ENUM('clustalo', 'plotcon', 'motif', 'custom') NOT NULL,
   `result_path` TEXT,              -- path to output file (.aln, .png, etc.)
   `label` VARCHAR(255),               -- Human-readable filename
-  `file_type` VARCHAR(10),            -- e.g. 'png', 'aln', 'txt'
+  `file_type` VARCHAR(32),            -- e.g. 'png', 'aln', 'txt'
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`search_id`) REFERENCES `Queries`(`search_id`) ON DELETE CASCADE
 );
