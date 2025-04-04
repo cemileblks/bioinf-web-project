@@ -1,0 +1,19 @@
+# Bioinformatics
+*.fasta
+*.aln
+*.dnd
+*.txt
+*.csv
+*.tsv
+*.png
+
+# Python
+__pycache__/
+*.pyc
+
+# Output folders
+scripts/output/
+
+# Sensitive config files
+db/login.php
+scripts/config.py
