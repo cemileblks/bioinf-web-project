@@ -26,8 +26,10 @@ echo<<< _CONTENT
   <div class="hero-text">
     <h1>Welcome to Protein Swirl</h1>
     <p>
-        A website to explore, analyse, and visualise protein sequences depending on thier taxa.<br>
-        Start by running a protein search or view the example run for <strong>glucose-6-phosphatase</strong> in <strong>Aves</strong> with "Try a Demo Run" button below.
+        Explore and analyse protein families across different species groups. View sequences, motifs, and conservation metrics — all in one place.
+    </p>
+    <p>
+        🔐 You'll need to log in to run your own searches. <br> Not ready to sign up? Try the <strong>demo</strong> below to see an example analysis of <em>glucose-6-phosphatase</em> in birds (Aves).
     </p>
     <div class="hero-buttons">
         $buttonHTML
