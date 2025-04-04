@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-echo "Running full clustalo analysis..."
+# echo "Running full clustalo analysis..."
 
 INPUT=$1
 ALIGNMENT_OUT=$2 # Align sequences with clustao
