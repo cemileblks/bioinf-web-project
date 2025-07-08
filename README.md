@@ -4,7 +4,7 @@
 **Protein Swirl** is a website to search, analyse, and visualise protein sequences by taxon and family. Built for the Introduction to Website and Database Design (BILG11016) course at the University of Edinburgh, it combines sequence retrieval, multiple sequence alignment, motif detection, and visualisation — all wrapped in a simple user interface.
 
 ### Motivation and Learning Outcomes
- - To combine web development with a bioinformatics workflow.
+- To combine web development with a bioinformatics workflow.
 - To deepen understanding of backend scripting (Bash/Python) and database driven applications.
 - To explore the integration of biological analysis tools (Clustal Omega, EMBOSS) into a web context.
 
@@ -30,7 +30,7 @@ git clone https://github.com/cemileblks/bioinf-web-project
 	$database = 's2756532_web_project';
 	$username = 'your_db_username';
 	$password = 'your_db_password';
-	?>
+?>
 ```
  3. Ensure EMBOSS and Clustal Omega are installed and accessible in your `$PATH`.
  4. Set executable permissions on Bash and Python scripts if necessary.
@@ -65,14 +65,14 @@ Results page (tree, matrix, plots, tables, downloads):
 -   🌳 Visualise guide trees interactively (jsPhyloSVG)
 -   🎯  Detect conserved motifs (EMBOSS `patmatmotifs`)
 -   📊 Generate custom plots: identity matrix, motif frequency (Python)
--    💾 Save and revisit past queries (user login)
+-   💾 Save and revisit past queries (user login)
 -   🧪 Demo mode available (no login needed)
 
 ## Technologies Used
 
 -   **Frontend**: HTML, CSS, JavaScript (Raphael.js, jsPhyloSVG)
 -   **Backend**: PHP (with PDO), Bash scripts
- -   **Database**: MySQL
+-   **Database**: MySQL
 -   **Bioinformatics**: Clustal Omega, EMBOSS, Biopython
 -   **Plotting**: Python (matplotlib, seaborn)
 
