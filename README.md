@@ -22,10 +22,18 @@ Clone the repository and set up a local web server (e.g. XAMPP, LAMP):
 ```bash
 git clone https://github.com/cemileblks/bioinf-web-project
 ```
- 1.  Import the provided `.sql` file into your MySQL database.
- 2. Update database credentials in `config.php`.
- 3.  Ensure EMBOSS and Clustal Omega are installed and accessible in your `$PATH`.
- 4.  Set executable permissions on Bash and Python scripts if necessary.
+ 1. Import the provided `.sql` file into your MySQL database.
+ 2. Create your database login file as `db/login.php`:
+```php
+<?php
+	$hostname = '127.0.0.1';
+	$database = 's2756532_web_project';
+	$username = 'your_db_username';
+	$password = 'your_db_password';
+	?>
+```
+ 3. Ensure EMBOSS and Clustal Omega are installed and accessible in your `$PATH`.
+ 4. Set executable permissions on Bash and Python scripts if necessary.
  5. Start your web server and access `index.php` in your browser.
 
 ## Usage
