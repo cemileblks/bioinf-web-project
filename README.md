@@ -13,7 +13,6 @@
 - [Usage](#usage)
 - [Features](#features)
 - [Technologies Used](#technologies-used)
-- [Screenshots](#screenshots)
 - [Credits](#credits)
 - [License](#license)
 - [Future Improvements](#future-improvements)
@@ -41,10 +40,15 @@ Try the live version here:
 🌐  [https://bioinfmsc8.bio.ed.ac.uk/~s2756532/web_project/index.php](https://bioinfmsc8.bio.ed.ac.uk/~s2756532/web_project/index.php)
 
 Welcome page of the project:
+
 ![Homepage](./assets/images/homepage.png)
+
 Search page (glucose-6-phosphatase in Aves, top 10 sequences):
+
 ![Search Page](./assets/images/search_page.png)
+
 Results page (tree, matrix, plots, tables, downloads): 
+
 ![Search Results](./assets/images/results_page.png)
 
 ## Features
